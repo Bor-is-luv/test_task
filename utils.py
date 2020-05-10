@@ -1,8 +1,17 @@
 from app import db
 from models import Ip
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask import request
 from app import limit
+
+
+def removal_of_restriction():
+    for row in Ip.query.all():
+        if datetime.now() - row.date > timedelta(minutes=1):
+            db.session.delete(row)
+            print('delete')
+
+    db.session.commit()
 
 
 def mask(ip):
@@ -33,9 +42,13 @@ def check_ip(fn):
         db.session.add(ip_row)
         db.session.commit()
 
-        limit_row = Ip.query.filter(Ip.ip==ip_row.number-limit).first()
+        limit_row = Ip.query.filter(Ip.ip==ip_row.ip).filter(Ip.number==ip_row.number-limit).first()
         if limit_row is None:
-            limit_row = Ip.query.filter(Ip.ip=ip).first()
+            return fn(*args, **kwargs)
+
+        if ip_row.date - limit_row.date < timedelta(minutes=2):
+            return 'Too Many Requests', 429
+        
         print(ip_row.number)
         return fn(*args, **kwargs)
     return wrapper
