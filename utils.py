@@ -1,15 +1,13 @@
-from app import db
-from models import Ip
+from app import db, limit, waiting_time
+from models import Request
 from datetime import datetime, timedelta
 from flask import request
-from app import limit
 
 
 def removal_of_restriction():
-    for row in Ip.query.all():
-        if datetime.now() - row.date > timedelta(minutes=1):
+    for row in Request.query.all():
+        if datetime.now() - row.date > timedelta(seconds=waiting_time+60):
             db.session.delete(row)
-            print('delete')
 
     db.session.commit()
 
@@ -20,8 +18,12 @@ def mask(ip):
     return subnet
 
 
+def get_last_request(ip):
+    return Request.query.filter(Request.ip==ip).order_by(Request.date.desc()).first()
+
+
 def next_ip_number(ip):
-    last_ip_row = Ip.query.filter(Ip.ip==ip).order_by(Ip.date.desc()).first() # NEED REWORK
+    last_ip_row = get_last_request(ip) # NEED REWORK
     return last_ip_row.number + 1
 
 
@@ -34,21 +36,26 @@ def check_ip(fn):
 
         new_ip = mask(ip)
 
-        if Ip.query.filter(Ip.ip==new_ip).first() is None:
-            ip_row = Ip(new_ip, datetime.now())
-        else:
-            ip_row = Ip(new_ip, datetime.now(), next_ip_number(new_ip))
+        last_request = get_last_request(new_ip)
 
-        db.session.add(ip_row)
-        db.session.commit()
-
-        limit_row = Ip.query.filter(Ip.ip==ip_row.ip).filter(Ip.number==ip_row.number-limit).first()
-        if limit_row is None:
+        if not last_request:
+            ip_row = Request(new_ip, datetime.now())
+            db.session.add(ip_row)
+            db.session.commit()
             return fn(*args, **kwargs)
+        else:
+            ip_row = Request(new_ip, datetime.now(), next_ip_number(new_ip))
 
-        if ip_row.date - limit_row.date < timedelta(minutes=2):
-            return 'Too Many Requests', 429
-        
-        print(ip_row.number)
-        return fn(*args, **kwargs)
+            db.session.add(ip_row)
+            db.session.commit()
+            print(ip_row.number)
+
+            limit_row = Request.query.filter(Request.ip==ip_row.ip).filter(Request.number==ip_row.number-limit).first()
+            if limit_row is None:
+                return fn(*args, **kwargs)
+
+            if last_request.date - limit_row.date < timedelta(seconds=60) and ip_row.date - last_request.date < timedelta(seconds=waiting_time):
+                return 'Too Many Requests', 429
+            
+            return fn(*args, **kwargs)
     return wrapper

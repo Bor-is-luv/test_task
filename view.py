@@ -1,5 +1,4 @@
 from app import app
-from models import Ip
 from app import db
 from utils import check_ip
 

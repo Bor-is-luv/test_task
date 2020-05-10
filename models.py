@@ -1,9 +1,9 @@
 from app import db
 
 
-class Ip(db.Model):
-    __tablename__ = 'ip'
-    ip = db.Column(db.String, primary_key=True,)
+class Request(db.Model):
+    __tablename__ = 'request'
+    ip = db.Column(db.String, primary_key=True)
     date = db.Column(db.DateTime, primary_key=True)
     number = db.Column(db.Integer)
 
@@ -13,4 +13,4 @@ class Ip(db.Model):
         self.number = number
 
     def __repr__(self):
-        return f"<Ip({self.ip} {self.date})>"
+        return f"<Request({self.ip} {self.date})>"

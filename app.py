@@ -16,12 +16,13 @@ manager = Manager(app)
 manager.add_command('db', MigrateCommand)
 
 limit = 100
+waiting_time = 120
 
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from utils import removal_of_restriction
 
 scheduler = BackgroundScheduler()
-scheduler.add_job(func=removal_of_restriction, trigger="interval", minutes=1)
+scheduler.add_job(func=removal_of_restriction, trigger="interval", seconds=15)
 
 scheduler.start()
