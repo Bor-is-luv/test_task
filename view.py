@@ -1,19 +1,10 @@
 from app import app
-from flask import request
 from models import Ip
-from datetime import datetime
 from app import db
-from utils import mask
+from utils import check_ip
+
 
 @app.route('/', methods=['GET', 'POST'])
+@check_ip
 def index():
-    if request.headers.getlist("X-Forwarded-For"):
-        ip = request.headers.getlist("X-Forwarded-For")[0]
-    else:
-        ip = request.remote_addr
-        
-    new_ip = mask(ip)
-    ip_row = Ip(new_ip, datetime.now())
-    db.session.add(ip_row)
-    db.session.commit()
-    return ip
+    return 'ok', 200
