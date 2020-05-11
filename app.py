@@ -17,12 +17,13 @@ manager.add_command('db', MigrateCommand)
 
 limit = 10
 waiting_time = 30
-
+period = 10
+mask_value = 24
 
 from apscheduler.schedulers.background import BackgroundScheduler
-from utils import removal_of_restriction
+from utils import removal_of_restriction, clear_db
 
 scheduler = BackgroundScheduler()
 scheduler.add_job(func=removal_of_restriction, trigger="interval", seconds=2)
-
+scheduler.add_job(func=clear_db, trigger="interval", seconds=period/4)
 scheduler.start()

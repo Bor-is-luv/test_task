@@ -1,7 +1,19 @@
-from app import db, limit, waiting_time
+from app import db, limit, waiting_time, period, mask_value
 from models import Request, Subnet
 from datetime import datetime, timedelta
 from flask import request
+
+
+def clear_db():
+    for subnet in Subnet.query.all():       
+        for rqst in subnet.requests:
+            if not subnet.allowed:
+                db.session.delete(rqst)
+            else:
+                if datetime.now() - rqst.date >= timedelta(seconds=period):
+                    db.session.delete(rqst)
+
+    db.session.commit()
 
 
 def removal_of_restriction():
@@ -14,7 +26,7 @@ def removal_of_restriction():
     db.session.commit()
 
 
-def mask(ip):
+def mask(ip, mask_value):
     splt = ip.split('.')
     subnet = '.'.join(splt[0:3])
     return subnet
@@ -59,7 +71,7 @@ def check_ip(fn):
         limit_row = Request.query.filter(Request.ip==rqst.ip).filter(Request.number==rqst.number-limit).first()
         if limit_row is None:
             return fn(*args, **kwargs)
-        elif rqst.date - limit_row.date < timedelta(seconds=10):
+        elif rqst.date - limit_row.date < timedelta(seconds=period):
             subnet.allowed = False
             subnet.start_of_restriction = datetime.now()
             db.session.add(subnet)
