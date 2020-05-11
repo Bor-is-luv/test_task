@@ -4,8 +4,21 @@ from datetime import datetime, timedelta
 from flask import request
 
 
+def generate_mask(mask_value):
+    str_mask = ''.join(['1' for i in range(mask_value)])
+    while len(str_mask) < 32:
+        str_mask = str_mask + '0'
+
+    print(str_mask, ' str mask')
+    bin_mask = bin(int(str_mask, base=2))[2:]
+    split_bin_mask = [bin_mask[i:i+8] for i in range(0, len(bin_mask), 8)]
+    for i in range(len(split_bin_mask)):
+        split_bin_mask[i] = int(split_bin_mask[i],base=2)
+    return split_bin_mask
+
+
 def clear_db():
-    for subnet in Subnet.query.all():       
+    for subnet in Subnet.query.all():
         for rqst in subnet.requests:
             if not subnet.allowed:
                 db.session.delete(rqst)
@@ -28,7 +41,16 @@ def removal_of_restriction():
 
 def mask(ip, mask_value):
     splt = ip.split('.')
-    subnet = '.'.join(splt[0:3])
+    for i in range(len(splt)):
+        splt[i] = int(splt[i])
+    int_mask = generate_mask(mask_value)
+    subnet = []
+    print(int_mask, ' int_mask')
+    print(splt, ' splt ip')
+    for i in range(len(int_mask)):
+        subnet.append(str(int_mask[i] & splt[i]))
+    subnet = '.'.join(subnet)
+    print(subnet, ' return subnet')
     return subnet
 
 
@@ -51,7 +73,7 @@ def check_ip(fn):
         else:
             ip = request.remote_addr
 
-        new_ip = mask(ip)
+        new_ip = mask(ip, mask_value)
 
         exist = Subnet.query.filter(Subnet.ip==new_ip).first()
         if not exist:
