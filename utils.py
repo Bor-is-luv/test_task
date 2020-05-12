@@ -4,16 +4,16 @@ from datetime import datetime, timedelta
 from flask import request
 
 
+
 def generate_mask(mask_value):
     str_mask = ''.join(['1' for i in range(mask_value)])
     while len(str_mask) < 32:
         str_mask = str_mask + '0'
 
-    print(str_mask, ' str mask')
     bin_mask = bin(int(str_mask, base=2))[2:]
     split_bin_mask = [bin_mask[i:i+8] for i in range(0, len(bin_mask), 8)]
     for i in range(len(split_bin_mask)):
-        split_bin_mask[i] = int(split_bin_mask[i],base=2)
+        split_bin_mask[i] = int(split_bin_mask[i], base=2)
     return split_bin_mask
 
 
@@ -45,12 +45,9 @@ def mask(ip, mask_value):
         splt[i] = int(splt[i])
     int_mask = generate_mask(mask_value)
     subnet = []
-    print(int_mask, ' int_mask')
-    print(splt, ' splt ip')
     for i in range(len(int_mask)):
         subnet.append(str(int_mask[i] & splt[i]))
     subnet = '.'.join(subnet)
-    print(subnet, ' return subnet')
     return subnet
 
 
