@@ -1,23 +1,14 @@
-FROM python:3.6-alpine as BASE
+# Use the Python3.7.2 image
+FROM python:3.7.2-stretch
 
-RUN apk add --no-cache linux-headers g++ postgresql-dev gcc build-base linux-headers ca-certificates python3-dev libffi-dev libressl-dev libxslt-dev
-RUN pip wheel --wheel-dir/root/wheels psycopg2
-RUN pip wheel --wheel-dir/root/wheels cryptography
-
-
-FROM python:3.6-alpine as REALEASE
-
-EXPOSE 8080
+# Set the working directory to /app
 WORKDIR /app
 
-ENV POSTGRES_USER="" POSTGRES_PASSWORD="" POSTGRES_HOST=postgres POSTGRES_PORT=5432 POSTGRES_DB=""
+# Copy the current directory contents into the container at /app 
+ADD . /app
 
-COPY dist/ ./dist/
-COPY docker/flask/uwsgi.ini ./
-COPY --from=BASE /root/wheels /root/wheels
+# Install the dependencies
+RUN pip install -r requirements.txt
 
-RUN apk add --no-cache build-base linux-headers postgresql-dev pcre-dev libpq uwsgi-python3 && \
-pip install --no-index --find-links=/root/wheels /root/wheels/^ && \
-pip install dist/*
-
-CMD ["uwsgi", "--ini", "/app/uwsgi.ini"]
+# run the command to start uWSGI
+CMD ["uwsgi", "app.ini"]

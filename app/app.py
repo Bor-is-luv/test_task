@@ -1,5 +1,4 @@
 from flask import Flask
-from config import Configuration
 from flask_sqlalchemy import SQLAlchemy
 
 from flask_migrate import Migrate, MigrateCommand
@@ -7,6 +6,14 @@ from flask_script import Manager
 
 import sys
 import argparse
+
+
+class Configuration:
+    DEBUG = True
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://test:test@localhost:5436/test'
+    SECRET_KEY = 'very secret'
+    
 
 app = Flask(__name__)
 app.config.from_object(Configuration)

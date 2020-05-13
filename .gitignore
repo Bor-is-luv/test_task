@@ -1,7 +1,7 @@
 __pycache__/*
+app/__pycache__/*
 .vscode/*
 migrations/__pycache__/*
 migrations/versions/__pycache__/*
 venv/*
 templates/idea./*
-app/__pycache__/*
