@@ -11,4 +11,5 @@ ADD . /app
 RUN pip install -r requirements.txt
 
 # run the command to start uWSGI
-CMD ["uwsgi", "app.ini"]
+#CMD ["uwsgi", "app.ini"]
+ENTRYPOINT ["docker-entrypoint.sh"]
