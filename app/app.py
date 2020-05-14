@@ -13,7 +13,7 @@ import os
 class Configuration:
     DEBUG = True
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    os.environ.get('SQLALCHEMY_DATABASE_URI')
+    SQLALCHEMY_DATABASE_URI = os.environ.get('SQLALCHEMY_DATABASE_URI')
     #SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://test:test@localhost:5436/test'
     SECRET_KEY = 'very secret'
     
@@ -38,14 +38,19 @@ def createParser():
     return parser
 
 
-parser = createParser()
-namespace = parser.parse_args(sys.argv[1:])
+#parser = createParser()
+#namespace = parser.parse_args(sys.argv[1:])
 
 
-limit = namespace.limit
-waiting_time = namespace.waiting_time
-period = namespace.period
-mask_value = namespace.mask_value
+#limit = namespace.limit
+#waiting_time = namespace.waiting_time
+#period = namespace.period
+#mask_value = namespace.mask_value
+
+limit = int(os.environ.get('LIMIT'))
+waiting_time = int(os.environ.get('WAITING_TIME'))
+period = int(os.environ.get('PERIOD'))
+mask_value = int(os.environ.get('MASK_VALUE'))
 
 
 from apscheduler.schedulers.background import BackgroundScheduler

@@ -10,8 +10,11 @@ services:
     depends_on:
       - db
     environment:
-      STAGE: test
       SQLALCHEMY_DATABASE_URI: postgresql+psycopg2://test:test@db/test
+      LIMIT: 100
+      WAITING_TIME: 120
+      PERIOD: 60
+      MASK_VALUE: 24
     restart: always
     expose:
       - 8080
