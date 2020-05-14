@@ -11,9 +11,9 @@ services:
       - db
     environment:
       SQLALCHEMY_DATABASE_URI: postgresql+psycopg2://test:test@db/test
-      LIMIT: 100
-      WAITING_TIME: 120
-      PERIOD: 60
+      LIMIT: 20
+      WAITING_TIME: 24
+      PERIOD: 12
       MASK_VALUE: 24
     restart: always
     expose:

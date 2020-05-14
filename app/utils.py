@@ -2,7 +2,14 @@ from app import db, limit, waiting_time, period, mask_value
 from models import Request, Subnet
 from datetime import datetime, timedelta
 from flask import request
+from flask import render_template, make_response
 
+
+def create_429_response():
+    response = make_response(render_template('error.html', limit=limit,\
+                            waiting_time=waiting_time, period=period), 429)
+    response.headers['Cache-Control'] = 'no-store'
+    return response
 
 
 def generate_mask(mask_value):
@@ -85,7 +92,7 @@ def check_ip(fn):
         db.session.commit()
 
         if not subnet.allowed:
-            return 'Too Many Requests', 429
+            return create_429_response()
 
         limit_row = Request.query.filter(Request.ip==rqst.ip).filter(Request.number==rqst.number-limit).first()
         if limit_row is None:
@@ -95,7 +102,7 @@ def check_ip(fn):
             subnet.start_of_restriction = datetime.now()
             db.session.add(subnet)
             db.session.commit()
-            return 'Too Many Requests', 429
+            return create_429_response()
             
         return fn(*args, **kwargs)
     return wrapper
