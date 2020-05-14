@@ -9,7 +9,11 @@ ADD . /app
 
 # Install the dependencies
 RUN pip install -r requirements.txt
-
+#RUN chmod +x docker-entrypoint.sh
 # run the command to start uWSGI
 #CMD ["uwsgi", "app.ini"]
-ENTRYPOINT ["docker-entrypoint.sh"]
+#ENTRYPOINT ["docker-entrypoint.sh"]
+
+RUN chmod 755 docker-entrypoint.sh
+
+ENTRYPOINT ["/app/docker-entrypoint.sh"]

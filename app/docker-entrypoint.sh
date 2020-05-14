@@ -1,3 +1,3 @@
-#!/bin/sh
+#!/bin/bash
 python manage.py db upgrade
 uwsgi app.ini
