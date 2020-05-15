@@ -4,7 +4,8 @@
 1) Установить docker, docker-compose
 2) Установить git
 3) git clone https://github.com/Bor-is-luv/test_task.git
-4) (sudo) docker-compose up
+4) cd test_task
+5) (sudo) docker-compose up
 ---
 #### Настройки
 Чтобы задать настройки, откройте docker-compose.yml и измените значение переменных окружения flask на собственные
@@ -16,5 +17,5 @@
 ---
 #### Возможные трудности
 В ходе развёртывания приложения flask, из интернета устанавливаются зависимости и pip не всегда может их найти. 
-Мне помогло [осбуждение этой проблемы](https://stackoverflow.com/questions/44761246/temporary-failure-in-name-resolution-errno-3-with-docker) 
+Мне помогло [осбуждение этой проблемы](https://stackoverflow.com/questions/44761246/temporary-failure-in-name-resolution-errno-3-with-docker).  
 Особенно, ответ Jack Fan
