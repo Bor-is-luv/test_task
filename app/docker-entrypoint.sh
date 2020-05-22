@@ -1,4 +1,5 @@
 #!/bin/bash
+sleep 10
 python manage.py db upgrade
-sleep 30
+sleep 10
 uwsgi app.ini
