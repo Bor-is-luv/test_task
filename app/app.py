@@ -11,7 +11,7 @@ import os
 
 
 class Configuration:
-    DEBUG = True
+    DEBUG = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_DATABASE_URI = os.environ.get('SQLALCHEMY_DATABASE_URI')
     #SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://test:test@localhost:5436/test'
